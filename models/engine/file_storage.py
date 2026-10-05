@@ -8,7 +8,6 @@ from models.city import City
 from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
-import shlex
 
 
 class FileStorage:
@@ -22,21 +21,17 @@ class FileStorage:
     __objects = {}
 
     def all(self, cls=None):
-        """returns a dictionary
+        """returns a dictionary of the stored objects
+        Args:
+            cls: optional class (or class name) to filter by
         Return:
-            returns a dictionary of __object
+            dictionary of __objects, filtered by cls when given
         """
-        dic = {}
-        if cls:
-            dictionary = self.__objects
-            for key in dictionary:
-                partition = key.replace('.', ' ')
-                partition = shlex.split(partition)
-                if (partition[0] == cls.__name__):
-                    dic[key] = self.__objects[key]
-            return (dic)
-        else:
+        if cls is None:
             return self.__objects
+        name = cls if isinstance(cls, str) else cls.__name__
+        return {key: obj for key, obj in self.__objects.items()
+                if key.split('.')[0] == name}
 
     def new(self, obj):
         """sets __object to given obj
@@ -57,7 +52,7 @@ class FileStorage:
             json.dump(my_dict, f)
 
     def reload(self):
-        """serialize the file path to JSON file path
+        """deserialize the JSON file to __objects
         """
         try:
             with open(self.__file_path, 'r', encoding="UTF-8") as f:
@@ -72,7 +67,7 @@ class FileStorage:
         """
         if obj:
             key = "{}.{}".format(type(obj).__name__, obj.id)
-            del self.__objects[key]
+            self.__objects.pop(key, None)
 
     def close(self):
         """ calls reload()

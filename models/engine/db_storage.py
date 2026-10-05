@@ -4,7 +4,6 @@
 from os import getenv
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import (create_engine)
-from sqlalchemy.ext.declarative import declarative_base
 from models.base_model import Base
 from models.state import State
 from models.city import City
@@ -43,9 +42,11 @@ class DBStorage():
             for item in my_classes:
                 query = self.__session.query(item)
                 for obj in query.all():
-                    obj_key = '{}.{}'.format(obj.__class__.name__, obj.id)
+                    obj_key = '{}.{}'.format(obj.__class__.__name__, obj.id)
                     objects[obj_key] = obj
         else:
+            if isinstance(cls, str):
+                cls = {c.__name__: c for c in my_classes}.get(cls)
             query = self.__session.query(cls)
             for obj in query.all():
                 obj_key = '{}.{}'.format(obj.__class__.__name__, obj.id)
@@ -58,7 +59,11 @@ class DBStorage():
 
     def save(self):
         """commit all the changes"""
-        self.__session.commit()
+        try:
+            self.__session.commit()
+        except Exception:
+            self.__session.rollback()
+            raise
 
     def delete(self, obj=None):
         """delete current database session"""

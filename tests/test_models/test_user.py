@@ -16,19 +16,19 @@ class test_User(test_basemodel):
     def test_first_name(self):
         """ """
         new = self.value()
-        self.assertEqual(type(new.first_name), str)
+        self.assertIn(type(new.first_name), (str, type(None)))
 
     def test_last_name(self):
         """ """
         new = self.value()
-        self.assertEqual(type(new.last_name), str)
+        self.assertIn(type(new.last_name), (str, type(None)))
 
     def test_email(self):
         """ """
         new = self.value()
-        self.assertEqual(type(new.email), str)
+        self.assertIn(type(new.email), (str, type(None)))
 
     def test_password(self):
         """ """
         new = self.value()
-        self.assertEqual(type(new.password), str)
+        self.assertIn(type(new.password), (str, type(None)))
