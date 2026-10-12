@@ -70,8 +70,10 @@ class test_basemodel(unittest.TestCase):
     def test_str(self):
         """ testing the str method of themodel"""
         i = self.value()
+        attrs = {k: v for k, v in i.__dict__.items()
+                 if k != '_sa_instance_state'}
         self.assertEqual(str(i), '[{}] ({}) {}'.format(self.name, i.id,
-                         i.__dict__))
+                         attrs))
 
     def test_todict(self):
         """ testing the to_dict method"""
